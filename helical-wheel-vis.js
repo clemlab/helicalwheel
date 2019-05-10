@@ -1,40 +1,81 @@
-// URL: https://observablehq.com/@smsaladi/polar-clock-edited
-// Title: Polar Clock (Edited 2019-04-19)
-// Author: Shyam Saladi (@smsaladi)
-// Version: 314
+// URL: https://observablehq.com/@tinaswang/helical-wheel-visualization-wip-2019_04_29
+// Title: Helical Wheel Visualization (WIP 2019_04_29)
+// Author: Tina Wang (@tinaswang)
+// Version: 772
 // Runtime version: 1
 
 const m0 = {
-  id: "a1dee6cad0367e80@314",
+  id: "308022ae82731b24@772",
   variables: [
     {
       inputs: ["md"],
       value: (function(md){return(
-md`# Polar Clock (Edited 2019-04-19)`
+md`# Helical Wheel Visualization (WIP 2019_04_29)`
 )})
     },
     {
-      from: "@jashkenas/inputs",
-      name: "slider",
-      remote: "slider"
-    },
-    {
-      name: "configuredSlider",
-      inputs: ["slider"],
-      value: (function(slider){return(
-slider({
-  min: 0, 
-  max: 360, 
-  step: 1
+      name: "viewof inputAngle",
+      inputs: ["text"],
+      value: (function(text){return(
+text({
+      title: "Angle of Separation",
+      placeholder: "100",
+      value: 100,
+      submit: "Go",
+      description: "Insert an angle of separation between amino acids. Default value is 100 degrees."
 })
 )})
     },
     {
-      inputs: ["d3","DOM","width","height","fields","circleCount","dotRadius","color"],
-      value: (function(d3,DOM,width,height,fields,circleCount,dotRadius,color)
-{
+      name: "inputAngle",
+      inputs: ["Generators","viewof inputAngle"],
+      value: (G, _) => G.input(_)
+    },
+    {
+      name: "viewof inputText",
+      inputs: ["text"],
+      value: (function(text){return(
+text({
+      title: "Input String",
+      value: "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ",
+      placeholder: "ABCD"
+})
+)})
+    },
+    {
+      name: "inputText",
+      inputs: ["Generators","viewof inputText"],
+      value: (G, _) => G.input(_)
+    },
+    {
+
+    },
+    {
+      inputs: ["DOM","rasterize","chart"],
+      value: (function(DOM,rasterize,chart){return(
+DOM.download(() => rasterize(chart), undefined, "Save as PNG")
+)})
+    },
+    {
+      name: "chart",
+      inputs: ["globals","d3","DOM","fields"],
+      value: (function(globals,d3,DOM,fields)
+{ 
+  // Mess with globals?
+  const gvar = globals[0];
+  const gWidth = gvar["width"];
+  const gHeight = gvar["height"];
+  const gAngle = gvar["angle"];
+  const gRadius = gvar["radius"];
+  const gColors = gvar["colors"];
+  const termDistX = gvar["termDistX"];
+  const termDistY = gvar["termDistY"];
+  const gCircleSep = gvar["circleSep"];
+  const gDotRadius = gvar["dotRadius"]
+  // I want to mathematically calculate the num of maxCircles instead of just declaring it 18?
+  const maxCircles = 18;
   
-  const svg = d3.select(DOM.svg(width, height))
+  const svg = d3.select(DOM.svg(gWidth, gHeight))
       .attr("text-anchor", "middle")
       .style("display", "block")
       .style("font", "700 14px 'Helvetica Neue'")
@@ -42,145 +83,174 @@ slider({
       .style("max-width", `${window.screen.height}px`)
       .style("height", "auto")
       .style("margin", "auto");
-
-  const field = svg.append("g")
-     .attr("transform", `translate(${width / 2},${height / 2})`)
-    .selectAll("g")
-    .data(fields)
-    .enter(); // .append("g");
-
-  // outline of circle in back
-  field.append("circle")
-      .attr("fill", "none")
-      .attr("stroke", "#000")
-      .attr("stroke-width", 1.5)
-      .attr("r", d => d.radius);
   
+  // group together all elements we draw
+  var group = svg.append("g");
+  
+ 
+  const field = group
+      .attr("transform", `translate(${gWidth / 2},${gHeight / 2})`)
+      .selectAll("g")
+      .data(fields)
+      .enter().append("g");
 
+  
+  // create the points we're going to graph circles on
   const fieldTick = field.selectAll("g")
       .data(d => {
-        // process d.string into an array
-        console.log(d);
-        const processed_data = [1, 2, 3, 4, 5, 6, 7];
-        return processed_data.map(x => ({x: x, field: d}));
+        return d.string.split("").map((c, i) => ({c: c, i: i, params: d}));
       })
-    .enter().append("g")
+      .enter().append("g")
       .attr("class", "field-tick")
-      .attr("transform", (d, i) => {
-        const angle = i / circleCount * 2 * Math.PI - Math.PI / 2;
-        return `translate(${Math.cos(angle) * d.field.radius}, ${Math.sin(angle) * d.field.radius})`;
+      .attr("transform", d => {
+        const c = d.c;
+        const anglerad = (d.i * gAngle % 360) * Math.PI / 180;
+        
+        // Should make 18 a constant of some sort - magic number bad 
+        d.x = Math.cos(anglerad) * (d.params.radius + (gCircleSep * Math.floor(d.i / maxCircles)));
+        d.y = Math.sin(anglerad) * (d.params.radius + (gCircleSep * Math.floor(d.i / maxCircles)));
+        // Calculate the previous points
+        if (d.i !== 0) { 
+          const prev = d.i - 1;
+          const prevAngle = (prev * gAngle % 360) * Math.PI / 180;
+          const prev_x = Math.cos(prevAngle) * (d.params.radius + (gCircleSep * Math.floor(prev / maxCircles)));
+          const prev_y = Math.sin(prevAngle) * (d.params.radius + (gCircleSep * Math.floor(prev / maxCircles)));
+          d.linePoints = [{x : prev_x, y : prev_y}, {x: d.x, y: d.y}]
+        }
+         // Store the endpoints in a format where we can access it later
+        else {
+          d.linePoints = [{x : d.x, y : d.y}, {x: d.x, y: d.y}]
+        }
+
+        return `translate(${d.x}, ${d.y})`;
       });
-
-  // Add circles to all the blank gaps 
-  const fieldCircle = fieldTick.append("circle")
-      .attr("r", dotRadius)
-      .attr("fill", "green")
-      .style("color", (d, i) => color(i / circleCount * 2 * Math.PI));
-
-  // const fieldFocus = field.append("circle")
-  //     .attr("r", dotRadius)
-  //     .attr("fill", "white")
-  //     .attr("stroke", "#000")
-  //     .attr("stroke-width", 3)
-  //     .attr("cy", d => -d.radius)
-  //     .style("transition", "transform 500ms ease");
   
-  // trying to add text
-//   fieldTick.append("text")
-//       .attr("dy", "0.35em")
-//       .attr("fill", "#222")
-//       .text(d => d.field.format(d.time).slice(0, 2));
+
+  // Add circles around the wheel
+  fieldTick.append("circle")
+      .attr("r", d => {
+        return gDotRadius;
+      })
+      .attr("fill", d => {
+        return gColors[d.c];
+      })
+      .attr("stroke", "black")
+      .attr("stroke-width", 1);
   
+  
+  // Create paths between the circles
+  var lineFunction = d3.line()
+  .x(function(d) { return d.x; })
+  .y(function(d) { return d.y; })
+ .curve(d3.curveLinear);
+
+
+  // Add the paths between each pair; our stroke-width grows as the number of residues increases
+  field.selectAll('path')
+     .data(fieldTick.data())
+     .enter().append('path')
+     .attr('d', function(d) { return lineFunction(d.linePoints); } )
+     .attr('stroke-width', function(d) { return d.i / 10; })
+     .attr('stroke', "black").lower();
+
+  
+  
+  
+  // Add labels inside each circle
+  fieldTick.append("text")
+        .attr("text-anchor", "middle")        // These lines center
+        .attr("dominant-baseline", "central") // text in the circle
+        .text(d => d.i + 1);
+  
+    // Add amino acids labels outside
+    fieldTick.append("text")
+        .attr("dx", function(d) {return -termDistX; })
+        .attr("dy", function(d) {return -termDistY; })
+        .text(d => d.c);
+  
+  // Add labels for the N and C terminuses in red
+  if (fieldTick.data().length > 0) {
+    field.append("text")
+          .attr("x", fieldTick.data()[0].x + termDistX)
+          .attr("y",fieldTick.data()[0].y + termDistY)
+          .text("N")
+         .attr("fill", "red");
+  }
+  
+   // Add labels for the N and C terminuses
+  if (fieldTick.data().length > 1) {
+    field.append("text")
+          .attr("x", fieldTick.data()[fieldTick.data().length - 1].x + termDistX)
+          .attr("y",fieldTick.data()[fieldTick.data().length - 1].y + termDistY)
+          .text("C")
+         .attr("fill", "red");
+  }
+  
+   // handle rotation drag
+   group.call(d3.drag()
+        
+        .on("drag", dragged)
+        );
+
+    // Function that moves the helical wheel 
+    // Calculations for angle from http://bl.ocks.org/tomgp/f39ccb9d4c17ced4e3d2
+    function dragged(d) {
+      d3.select(this).classed('active',true);
+      var x = d3.event.x - gRadius;
+      var y = d3.event.y - gRadius;
+        var newAngle = Math.atan2(y , x) * 57.2957795;
+        if (newAngle < 0) {
+          newAngle = 360 + newAngle;
+        }
+        // Rotate everything using the newly calculated angle and centered on the center of the circle
+        group.attr("transform","translate(" + gWidth / 2 + ", " + gHeight / 2 + 
+                          ") rotate(" + newAngle +")" )
+    }
+
   return svg.node();
-
-  //yield update(Math.floor((Date.now() + 1) / 1000) * 1000);
-  
-//   while (true) {
-//     const then = Date.now()
-//     // const then = Math.ceil((Date.now() + 1) / 1000) * 1000;
-//     yield Promises.when(then, then).then(update);
-//   }
-  
-//   function update(then) {
-//     for (const d of fields) {
-//       const start = d.interval(then);
-//       const index = d.subinterval.count(start, then);
-//       fieldFocus.attr("transform", d => `rotate(${(100 / d.range.length + d.cycle) * 360})`);
-//       d.index = index;
-//     }
-//     return svg.node();
-//   }
-
 }
 )
     },
     {
       name: "fields",
-      inputs: ["radius","d3"],
-      value: (function(radius,d3){return(
-[
-  {radius: radius, interval: d3.timeMinute, subinterval: d3.timeSecond, format: d3.timeFormat(""),
-   string: 'XXXXXX'}
-]
+      inputs: ["globals","inputText"],
+      value: (function(globals,inputText){return(
+[{radius: 0.7 * globals[0]["radius"],
+           string: inputText,
+           dotRadius: globals[0]["radius"] / 15,
+
+          }]
 )})
     },
     {
-      name: "circleCount",
-      value: (function(){return(
-23
-)})
-    },
-    {
-      name: "width",
-      value: (function(){return(
-2000
-)})
-    },
-    {
-      name: "height",
-      inputs: ["width"],
-      value: (function(width){return(
-width
-)})
-    },
-    {
-      name: "radius",
-      inputs: ["width"],
-      value: (function(width){return(
-width / 1.67
-)})
-    },
-    {
-      name: "armRadius",
-      inputs: ["radius"],
-      value: (function(radius){return(
-radius / 22
-)})
-    },
-    {
-      name: "dotRadius",
-      inputs: ["armRadius"],
-      value: (function(armRadius){return(
-armRadius - 9
-)})
-    },
-    {
-      name: "color",
-      inputs: ["d3"],
-      value: (function(d3){return(
-d3.scaleSequential(d3.interpolateRainbow).domain([0, 2 * Math.PI])
-)})
-    },
-    {
-      name: "arcArm",
-      inputs: ["d3","armRadius"],
-      value: (function(d3,armRadius){return(
-d3.arc()
-    .startAngle(d => armRadius / d.radius)
-    .endAngle(d => -Math.PI - armRadius / d.radius)
-    .innerRadius(d => d.radius - armRadius)
-    .outerRadius(d => d.radius + armRadius)
-    .cornerRadius(armRadius)
+      name: "globals",
+      inputs: ["inputAngle"],
+      value: (function(inputAngle){return(
+[{width: 600,
+            height: 600,
+            radius: 250,
+            dotRadius: 250 / 15,
+            termDistX: 20,
+            termDistY: 20,
+            circleSep: 50,
+            angle: inputAngle,
+            // Shapely colors (not colorblind friendly)
+            // http://life.nthu.edu.tw/~fmhsu/rasframe/SHAPELY.HTM
+            colors: {
+                "D": "#E60A0A", "E": "#E60A0A",
+                "C": "#E6E600", "M": "#E6E600",
+                "K": "#145AFF", "R": "#145AFF",
+                "S": "#FA9600", "T": "#FA9600",
+                "F": "#3232AA", "Y": "#3232AA",
+                "N": "#00DCDC", "Q": "#00DCDC",
+                "G": "#EBEBEB",
+                "L": "#0F820F", "V": "#0F820F", "I": "0F820F",
+                "A": "#C8C8C8",
+                "W": "#B45AB4",
+                "H": "#8282D2",
+                "P": "#DC9682"
+            }
+           }]
 )})
     },
     {
@@ -191,11 +261,14 @@ require("d3@5")
 )})
     },
     {
-      name: "ax",
-      inputs: ["require"],
-      value: (function(require){return(
-require("d3-axis")
-)})
+      from: "@jashkenas/inputs",
+      name: "text",
+      remote: "text"
+    },
+    {
+      from: "@mbostock/saving-svg",
+      name: "rasterize",
+      remote: "rasterize"
     }
   ]
 };
@@ -204,20 +277,41 @@ const m1 = {
   id: "@jashkenas/inputs",
   variables: [
     {
-      name: "slider",
+      name: "text",
       inputs: ["input"],
       value: (function(input){return(
-function slider(config = {}) {
-  let {value, min = 0, max = 1, step = "any", precision = 2, title, description, getValue, format, display, submit} = config;
-  if (typeof config == "number") value = config;
-  if (value == null) value = (max + min) / 2;
-  precision = Math.pow(10, precision);
-  if (!getValue) getValue = input => Math.round(input.valueAsNumber * precision) / precision;
-  return input({
-    type: "range", title, description, submit, format, display,
-    attributes: {min, max, step, value},
-    getValue
+function text(config = {}) {
+  const {
+    value,
+    title,
+    description,
+    autocomplete = "off",
+    maxlength,
+    minlength,
+    pattern,
+    placeholder,
+    size,
+    submit
+  } = config;
+  if (typeof config == "string") value = config;
+  const form = input({
+    type: "text",
+    title,
+    description,
+    submit,
+    attributes: {
+      value,
+      autocomplete,
+      maxlength,
+      minlength,
+      pattern,
+      placeholder,
+      size
+    }
   });
+  form.output.remove();
+  form.input.style.fontSize = "1em";
+  return form;
 }
 )})
     },
@@ -317,9 +411,63 @@ require("d3-format@1")
   ]
 };
 
+const m2 = {
+  id: "@mbostock/saving-svg",
+  variables: [
+    {
+      name: "rasterize",
+      inputs: ["DOM","serialize"],
+      value: (function(DOM,serialize){return(
+function rasterize(svg) {
+  let resolve, reject;
+  const promise = new Promise((y, n) => (resolve = y, reject = n));
+  const image = new Image;
+  image.onerror = reject;
+  image.onload = () => {
+    const rect = svg.getBoundingClientRect();
+    const context = DOM.context2d(rect.width, rect.height);
+    context.drawImage(image, 0, 0, rect.width, rect.height);
+    context.canvas.toBlob(resolve);
+  };
+  image.src = URL.createObjectURL(serialize(svg));
+  return promise;
+}
+)})
+    },
+    {
+      name: "serialize",
+      inputs: ["NodeFilter"],
+      value: (function(NodeFilter)
+{
+  const xmlns = "http://www.w3.org/2000/xmlns/";
+  const xlinkns = "http://www.w3.org/1999/xlink";
+  const svgns = "http://www.w3.org/2000/svg";
+  return function serialize(svg) {
+    svg = svg.cloneNode(true);
+    const fragment = window.location.href + "#";
+    const walker = document.createTreeWalker(svg, NodeFilter.SHOW_ELEMENT, null, false);
+    while (walker.nextNode()) {
+      for (const attr of walker.currentNode.attributes) {
+        if (attr.value.includes(fragment)) {
+          attr.value = attr.value.replace(fragment, "#");
+        }
+      }
+    }
+    svg.setAttributeNS(xmlns, "xmlns", svgns);
+    svg.setAttributeNS(xmlns, "xmlns:xlink", xlinkns);
+    const serializer = new window.XMLSerializer;
+    const string = serializer.serializeToString(svg);
+    return new Blob([string], {type: "image/svg+xml"});
+  };
+}
+)
+    }
+  ]
+};
+
 const notebook = {
-  id: "a1dee6cad0367e80@314",
-  modules: [m0,m1]
+  id: "308022ae82731b24@772",
+  modules: [m0,m1,m2]
 };
 
 export default notebook;
