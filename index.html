@@ -1,0 +1,51 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Create Helical Wheels!</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css" integrity="sha256-/us3egi2cVp0mEkVR8cnqLsuDY6BmrDuvTPUuEr1HJQ=" crossorigin="anonymous" />
+    <link rel="stylesheet" type="text/css" href="css/main.css" />
+    <style>
+    /* https://css-tricks.com/full-width-containers-limited-width-parents/ */
+    .fullwidth {
+      width: 100vw;
+      position: relative;
+      left: 50%;
+      right: 50%;
+      margin-left: -50vw;
+      margin-right: -50vw;
+    }
+    </style>
+  </head>
+  <body>
+      <h1>Helical Wheels</h1>
+      <p id="viewof-inputAngle"></p>
+      <p id="viewof-inputText"></p>
+      <div id="chart"></div>
+    <script type="module">
+     import notebook from "https://api.observablehq.com/@tinaswang/helical-wheel-visualization-wip-2019_05_10.js";
+
+     // Local import isn't working right now, oddly enough
+    
+      const renders = {
+        "viewof inputAngle": "#viewof-inputAngle",
+        "viewof inputText": "#viewof-inputText",
+        "chart": "#chart",
+      };
+
+      import {Inspector, Runtime} from "https://unpkg.com/@observablehq/notebook-runtime?module";
+      for (let i in renders)
+        renders[i] = document.querySelector(renders[i]);
+
+      Runtime.load(notebook, (variable) => {
+        if (renders[variable.name])
+          return new Inspector(renders[variable.name]);
+      });
+    </script>
+  </body>
+</html>
+
