@@ -18,7 +18,7 @@
 <div class="jumbotron">
   <h1 class="display-4">Helical Wheels</h1>
   <p class="lead">A WIP</p>
-  <hr class="my-4">
+  <hr class="my-2">
   <p>
       This is our 21st century helical wheel diagram. You are welcome!
   </p>
@@ -28,8 +28,18 @@
 <div class="row fill">
   
   <div class="col-4">
-    <p id="viewof-inputAngle"></p>
     <p id="viewof-inputText"></p>
+    <p id="viewof-inputAngle"></p>
+    <p id="viewof-currColors"></p>
+    <p id="viewof-labelOption"></p>
+    <p id="viewof-strokeThickness"></p>
+    <p id="viewof-labelColor"></p>
+    <p id="viewof-numColor"></p>
+    <p id="viewof-hMoment"></p>
+     <p id="viewof-hFace"></p>
+    <p id="svgSave"></p>
+
+
   </div>
 
   <div class="col-8">
@@ -40,17 +50,27 @@
 </div>
 
 <script type="module">
-  import notebook from "https://api.observablehq.com/@tinaswang/helical-wheel-visualization-wip-2019_05_10.js";
+  // import notebook from "https://api.observablehq.com/@tinaswang/helical-wheel-visualization-wip-2019_05_10.js";
+  import notebook from "https://api.observablehq.com/@tinaswang/helical-wheel-visualization-wip-2019_05_14.js";
 
   // Local import isn't working right now, oddly enough
 
   const renders = {
     "viewof inputAngle": "#viewof-inputAngle",
     "viewof inputText": "#viewof-inputText",
+    "viewof labelOption": "#viewof-labelOption",
+     "viewof currColors": "#viewof-currColors",
+    "viewof strokeThickness": "#viewof-strokeThickness",
+    "viewof labelColor": "#viewof-labelColor",
+    "viewof numColor": "#viewof-numColor",
+    "viewof hMoment": "#viewof-hMoment",
+    "viewof hFace": "#viewof-hFace",
+    "svgSave": "#svgSave",
     "chart": "#chart",
   };
 
-  import {Inspector, Runtime} from "https://unpkg.com/@observablehq/notebook-runtime?module";
+  import {Runtime, Inspector} from "https://unpkg.com/@observablehq/runtime@4/dist/runtime.js";
+
   for (let i in renders)
     renders[i] = document.querySelector(renders[i]);
 
