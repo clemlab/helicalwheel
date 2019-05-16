@@ -4,11 +4,39 @@
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
+  <title>Helical Wheels</title>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
   integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="stylesheet" type="text/css" href="style.css" />
+  <!-- There isn't an actual stylesheet yet rip  -->
+  <!-- <link rel="stylesheet" type="text/css" href="style.css" /> -->
+  <style>
+      #labelleft, #labelright {
+      dominant-baseline: hanging;
+      font-size: 12px;
+    }
+
+    #labelleft {
+      text-anchor: end;
+    }
+
+    #labelright {
+      text-anchor: start;
+    }
+
+    rect.overlay {
+      stroke: black;
+    }
+
+    rect.selection {
+      stroke: none;
+      fill: lightblue;
+      fill-opacity: 0.4;
+    }
+
+
+  </style>
+
 </head>
 
 <body>
@@ -43,6 +71,7 @@
   </div>
 
   <div class="col-8">
+    <center><div id="viewof-slider"></div></center>
     <div id="chart"></div>
   </div>
 
@@ -67,6 +96,8 @@
     "viewof hFace": "#viewof-hFace",
     "svgSave": "#svgSave",
     "chart": "#chart",
+    "viewof slider": "#viewof-slider"
+
   };
 
   import {Runtime, Inspector} from "https://unpkg.com/@observablehq/runtime@4/dist/runtime.js";
