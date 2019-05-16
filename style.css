@@ -1,0 +1,28 @@
+.jumbotron {
+          padding-top: 10px;
+          padding-bottom: 10px;
+          text-align: center;
+}
+#labelleft, #labelright {
+      dominant-baseline: hanging;
+      font-size: 12px;
+}
+
+#labelleft {
+  text-anchor: end;
+}
+
+#labelright {
+  text-anchor: start;
+}
+
+rect.overlay {
+  stroke: black;
+}
+
+rect.selection {
+  stroke: none;
+  fill: lightblue;
+  fill-opacity: 0.4;
+}
+
