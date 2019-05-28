@@ -24,12 +24,18 @@
   <hr class="my-2">
   <p>
       This is our 21st century helical wheel diagram. You are welcome!
+
+  </p>
+  <p>
+
+    If the site takes more than a second to load, refresh and it should be there.<br>
+    Recommended Browser: Chrome 
   </p>
 </div>
 
 <div class="container-fluid">
 <div class="row fill">
-  <div class="col"><div class="row"><div class="col-4">
+  <div class="col"><div class="row"><div class="col-5">
     <p id="viewof-inputText"></p>
     <p id="viewof-inputAngle"></p>
     <p id="viewof-currColors"></p>
@@ -39,8 +45,8 @@
     <p id="viewof-numColor"></p>
     <p id="viewof-hMoment"></p>
      <p id="viewof-hFace"></p>
-
-
+     <p id="viewof-customColorInput"></p>
+     <p id="viewof-customColor"></p>
 
   </div></div></div>
 
@@ -52,6 +58,43 @@
   </div></div></div>
 
 </div>
+<div class="container-fluid">
+<div class="row justify-content-md-center">
+  <div class="col-sm-4">
+      <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">
+        Custom Color Picker </button>
+        <div id="demo" class="collapse">
+        <p>Use this only if color scheme is set to "Custom."</p>
+        <p id="viewof-hColor"></p>
+        <p id="viewof-kColor"></p>
+        <p id="viewof-rColor"></p>
+        <p id="viewof-dColor"></p>
+        <p id="viewof-eColor"></p>
+        <p id="viewof-sColor"></p>
+        <p id="viewof-tColor"></p>
+        <p id="viewof-nColor"></p>
+        <p id="viewof-qColor"></p>
+        <p id="viewof-aColor"></p>
+        <p id="viewof-lColor"></p>
+        <p id="viewof-iColor"></p>
+        <p id="viewof-mColor"></p>
+        <p id="viewof-fColor"></p>
+        <p id="viewof-wColor"></p>
+        <p id="viewof-yColor"></p>
+        <p id="viewof-pColor"></p>
+        <p id="viewof-gColor"></p>
+  
+    </div>
+
+    </div>
+  </div>
+</div>
+
+
+  
+
+  
+
 </div>
 
 <script type="module">
@@ -70,10 +113,34 @@
     "viewof numColor": "#viewof-numColor",
     "viewof hMoment": "#viewof-hMoment",
     "viewof hFace": "#viewof-hFace",
+    "viewof customColorInput" : "#viewof-customColorInput",
+    "viewof customColor" : "#viewof-customColor",
     "svgSave": "#svgSave",
     "chart": "#chart",
-    "viewof slider": "#viewof-slider"
+    "viewof slider": "#viewof-slider",
 
+
+    // We have many color pickers
+    "viewof hColor": "#viewof-hColor",
+    "viewof kColor": "#viewof-kColor",
+    "viewof rColor": "#viewof-rColor",
+    "viewof dColor": "#viewof-dColor",
+    "viewof eColor": "#viewof-eColor",
+    "viewof sColor": "#viewof-sColor",
+    "viewof tColor": "#viewof-tColor",
+    "viewof nColor": "#viewof-nColor",
+    "viewof qColor": "#viewof-qColor",
+    "viewof aColor": "#viewof-aColor",
+    "viewof vColor": "#viewof-vColor",
+    "viewof lColor": "#viewof-lColor",
+    "viewof iColor": "#viewof-iColor",
+    "viewof mColor": "#viewof-mColor",
+    "viewof fColor": "#viewof-fColor",
+    "viewof wColor": "#viewof-wColor",
+    "viewof yColor": "#viewof-yColor",
+    "viewof pColor": "#viewof-pColor",
+    "viewof gColor": "#viewof-gColor",
+    "viewof cColor": "#viewof-cColor",
   };
 
   import {Runtime, Inspector} from "https://unpkg.com/@observablehq/runtime@4/dist/runtime.js";
