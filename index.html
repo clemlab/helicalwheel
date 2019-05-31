@@ -128,15 +128,21 @@
 
 
 
-
 <div class="row justify-content-md-center"><div class="col-8">
 
         <p>Use this only if color scheme is set to "Custom."</p>
-        <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#demo">
-          Custom Color Picker
-        </button>
-
-        <div id="demo" class="collapse">
+        
+        <div id="accordion">
+            <div class="card">
+                <div class="card-header" id="headingOne">
+                  <h5 class="mb-0">
+                    <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                     Custom Color Picker
+                    </button>
+                  </h5>
+                </div>
+        <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
+          <div class="card-body">
           <div class="row">
             <div class="col-sm-2"><p id="viewof-hColor"></p></div>
             <div class="col-sm-2"><p id="viewof-kColor"></p></div>
@@ -157,8 +163,10 @@
             <div class="col-sm-2"><p id="viewof-pColor"></p></div>
             <div class="col-sm-2"><p id="viewof-gColor"></p></div>
           </div>
+          </div>
         </div>
-
+        </div></div>
+      </div>
   </div>
 
 </div>
